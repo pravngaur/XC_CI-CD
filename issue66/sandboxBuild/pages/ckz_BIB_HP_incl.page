@@ -1,0 +1,18 @@
+<!--
+ - Created by brandon.rogers on 12/13/18.
+ -->
+
+<apex:page id="ckz_BIB_HP_incl" sidebar="false" showHeader="false" standardStylesheets="false">
+
+    <c:ckz_Hero />
+    <c:ckz_RecentOrders />
+    <c:ckz_OrderTemplates />
+    <c:ckz_SpotlightProducts />
+    <c:ckz_TopCategories />
+
+    <!--<c:ckz_Categories/>-->
+    <!--<c:ckz_HomePageRecentOrders/>-->
+    <!--<c:cc_HP_CartUpload />-->
+    <!--<c:cc_homepageOrderTemplate />-->
+
+</apex:page>

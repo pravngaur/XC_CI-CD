@@ -1,0 +1,40 @@
+<apex:component id="cc_Supersession_incl">
+    <script id="CC-ProductDetail-WidgetContainer-Desktop" type="text/template">
+        <div class="panel panel-default widget_container {{this.sectionID}}_container cc_panel cc_{{this.sectionID}}_container">
+            <div class="panel-heading cc_heading">
+                <h3 class="panel-title cc_title">{{pageLabelMap this.sectionLabel}}</h3>
+            </div>
+            <div class="panel-body cc_body">
+                <div class="widget_column cc_widget_column">
+                    <div class="{{this.sectionID}} cc_{{this.sectionID}}"></div>
+                </div>
+            </div>
+        </div>
+        <!-- SUPERSESSION MODAL -->
+        {{#ifEquals sectionFilter "Superseded"}}
+        <div class="modal fade" tabindex="-1" role="dialog" id="supercededModal">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">This Product has been Superseded</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="{{this.sectionID}} cc_{{this.sectionID}}"></div>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+        {{/ifEquals}}
+    </script>
+
+    <script>
+    jQuery(function($){
+      CCRZ.uiProperties.widgetSectionView.desktop.tmpl = 'CC-ProductDetail-WidgetContainer-Desktop';
+      CCRZ.pubSub.on('view:widgetSectionView:refresh', function(theView) {
+        //SUPERSESSION MODAL
+        $('#supercededModal').modal('show');
+      });
+    });
+</script>
+</apex:component>

@@ -1,0 +1,27 @@
+<aura:component access="global">
+    <aura:attribute name="obj" type="Object"/>
+    <aura:attribute name="selectedRowsCount" type="Integer"/>
+    <aura:attribute name="maxRowSelection" type="Integer" />
+    
+    <li onclick="{!c.objSelected}" style="padding-top:10px;padding-bottom:10px;">
+        <table>
+            <tr>
+                <td style="padding-left:10px;width:70px;">
+                    <lightning:input aura:id="ckBeachSelected"
+                                     type="toggle"
+                                     messageToggleActive=""
+                                     messageToggleInactive=""
+                                     checked="{!v.obj.Preselected}"
+                                     variant="label-hidden" onchange="{!c.onCheck}"/>
+                </td>
+                <td>
+                    <div style="font-size:1rem;">
+                        {!v.obj.Title}
+                    </div>
+                    <aura:unescapedHtml value="{!v.obj.Description}" />
+                </td>
+            </tr>
+        </table>
+        
+    </li>
+</aura:component>

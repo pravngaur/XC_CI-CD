@@ -1,0 +1,134 @@
+<!--
+ - Created by brandon.rogers on 10/3/18.
+ -->
+
+<apex:component id="cc_PDP_Assembly">
+    <script id="CC-ProductDetail-Desktop" type="text/template">
+        <div class="panel panel-default product_detail_container product_type_assembly cc_panel cc_product_detail_container cc_product_type_assembly">
+            <div class="panel-heading cc_heading">
+                <h3 class="panel-title cc_title">{{this.product.prodBean.name}}</h3>
+            </div>
+            <div class="panel-body product_detail cc_body cc_product_detail phoneProductItem">
+                <div class="messagingSection-Error" role="alert" style="display: none"></div>
+                <div class="messagingAction-Info" role="alert" style="display: none">
+                    <button type="button" class="close cc_close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&#215;</span></button>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="prod_media cc_prod_media">
+                            {{#if this.mediaWrappers.[SVG Interactive Diagram]}} {{#each this.mediaWrappers.[SVG Interactive Diagram]}}
+                            <div class="interactive cc_interactive">{{displaySVG this 'mainProdImage prodDetail img-responsive'}}</div>
+                            {{/each}} {{/if}}
+                            <div id="altImageModal" class="modal fade cc_alt_image_modal" tabindex="-1" role="dialog">
+                                <div class="modal-dialog cc_modal-dialg" role="document">
+                                    <div class="modal-content cc_modal-content">
+                                        <div class="modal-body cc_modal-body">
+                                            <img class="modalImg cc_modal_img" src=""/>
+                                            <p class="modalText cc_modal_text"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {{#if this.product.mediaWrapper }}
+                            <div class="cc_product_detail_photo_container" id="photoContainer">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="cc_main_prod_image">{{displayImage this.product.mediaWrapper 'mainProdImage prodDetail img-responsive'}}</div>
+                                    </div>
+                                </div>
+                                {{#if this.mediaWrappers.[Alternate Images]}}
+                                <div class="row">
+                                    {{#each this.mediaWrappers.[Product Image]}}
+                                    <div class="col-xs-3">
+                                        <img class="alternate cc_alternate img-responsive thumbnail" src="{{productImage this}}" data-id="{{this.uri}}"/>
+                                    </div>
+                                    {{/each}} {{#each this.mediaWrappers.[Alternate Images]}}
+                                    <div class="col-xs-3">
+                                        <img class="alternate cc_alternate img-responsive thumbnail" src="{{productImage this}}" data-id="{{this.uri}}"/>
+                                    </div>
+                                    {{/each}}
+                                </div>
+                                {{/if}}
+                            </div>
+                            {{else}} {{#if this.mediaWrappers.[SVG Interactive Diagram]}} {{else}}
+                            <div class="cc_product_detail_photo_container" id="photoContainer">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="cc_main_prod_image img-responsive">{{displayImage this.product.mediaWrapper 'mainProdImage prodDetail'}}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            {{/if}} {{/if}}
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <div class="includedItemsSection"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+
+        <div class="tabSection"></div>
+        <div class="widgetSection"></div>
+    </script>
+
+    <script id="CC-ProductDetail-IncludedSection-Desktop" type="text/template">
+        <div class="panel panel-default widget_container cc_panel cc_widget_container">
+            <div class="panel-heading cc_heading">
+                <h3 class="panel-title cc_title">{{pageLabelMap 'IncludedItems'}}</h3>
+            </div>
+            <div class="panel-body cc_body">
+                <div class="widget_column cc_widget_column">
+                    {{#each this}}
+                    <div class="row quick_wishlist cc_quick_wishlist {{product.prodBean.sku}}">
+                        <!-- <div class="col-md-3 quick_wishlist_item cc_quick_wishlist_item ">
+                         {{#if product.mediaWrapper}}
+                         <div class="cart_item_viewport cc_cart_item_viewport">
+                          <a href="#">{{{displayImage product.mediaWrapper 'prodDetailIncl img-responsive'}}}</a>
+                         </div>
+                         {{/if}}
+                        </div> -->
+                        <div class="col-md-8">
+                            <p class="cc_name">
+                                <a href="#" class="productName prodLink cc_product_name" data-id="{{product.prodBean.sku}}">{{product.prodBean.name}}</a>
+                            </p>
+                            <div class="sku cc_sku">
+                                <span class="cc_label">{{pageLabelMap 'ProductDetailsInc_SKU'}}</span>
+                                <span class="value cc_value">{{this.product.prodBean.sku}}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="cc_pricing">
+                                <p class="cc_quantity">{{pageLabelMap 'Quantity'}}: {{product.minQty}}</p>
+                                {{#if product.showPricing}}
+                                {{#ifDisplay 'PD.DsplPrc' }}
+                                {{#if product.price}}
+                                <p class="price cc_price">{{pageLabelMap 'CartInc_Price'}}: {{{price product.price}}}</p>
+                                {{/if}}
+                                {{/ifDisplay}}
+                                {{/if}}
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    {{/each}}
+                </div>
+            </div>
+        </div>
+    </script>
+
+    <script type="text/javascript">
+        jQuery(function ($) {
+            if (CCRZ.detailData.jsonProductData && CCRZ.detailData.jsonProductData.product) {
+                if (CCRZ.detailData.jsonProductData.product.prodBean.ProductType === 'Assembly') {
+                    CCRZ.uiProperties.productDetailView.desktop.tmpl = 'CC-ProductDetail-Desktop';
+                    CCRZ.uiProperties.assemblyInclItemsView.desktop.tmpl = 'CC-ProductDetail-IncludedSection-Desktop';
+                }
+            }
+        });
+    </script>
+</apex:component>

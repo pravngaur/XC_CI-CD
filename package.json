@@ -1,0 +1,15 @@
+{
+  "name": "xc_cicd",
+  "version": "1.0.0",
+  "description": "Project for deploying  SC & CC at once",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "deploy_test": "./index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "node-cmd": "^3.0.0"
+  }
+}

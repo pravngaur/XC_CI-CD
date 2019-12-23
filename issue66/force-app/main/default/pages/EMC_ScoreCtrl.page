@@ -1,0 +1,555 @@
+<apex:page contentType="application/javascript">
+    
+    function ScoreController($scope, SFDC, Mixpanel){
+        let leadScoreMinMax = {
+            'Unqualified': {
+                'min': 1,
+                'max': 25,
+                'insights': [
+                ]
+            },
+            'Rejected': {
+                'min': 1,
+                'max': 15,
+                'insights': [
+                ]
+            },
+            'Archived': {
+                'min': 1,
+                'max': 15,
+                'insights': [
+                ]
+            },
+            'New': {
+                'min': 20,
+                'max': 50,
+                'insights': [
+                ]
+            },
+            'Open': {
+                'min': 40,
+                'max': 80,
+                'insights': [
+                ]
+            },
+            'Working' : {
+                'min': 40,
+                'max': 65,
+                'insights': [
+                ]
+            },
+            'Contacted': {
+                'min': 55,
+                'max': 75,
+                'insights': [
+                ]
+            },
+            'Draft': {
+                'min': 65,
+                'max': 80,
+                'insights': [
+                ]
+            },
+            'Submitted': {
+                'min': 75,
+                'max': 90,
+                'insights': [
+                ]
+            },
+            'Pending': {
+                'min': 60,
+                'max': 80,
+                'insights': [
+                ]
+            },
+            'Approved': {
+                'min': 75,
+                'max': 90,
+                'insights': [
+                ]
+            },
+            'Qualified':{
+                'min': 85,
+                'max': 99,
+                'insights': [
+                ]
+            },
+            'Qualified - Convert':{
+                'min': 85,
+                'max': 99,
+                'insights': [
+                ]
+            }
+        }
+        
+        let opportunityScoreMinMax = {
+            'Closed Lost': {
+                'min': 1,
+                'max': 25,
+                'insights': [
+                ]
+            },
+            'Qualification': {
+                'min': 20,
+                'max': 34,
+                'insights': [
+                ]
+            },
+            'Discovery': {
+                'min': 35,
+                'max': 74,
+                'insights': [
+                ]
+            },
+            'Proposal/Quote': {
+                'min': 75,
+                'max': 89,
+                'insights': [
+                ]
+            },
+            'Negotiation' : {
+                'min': 85,
+                'max': 99,
+                'insights': [
+                ]
+            },
+            'Closed Won':{
+                'min': 90,
+                'max': 99,
+                'insights': [
+                ]
+            }
+        }
+        
+        let leadModel = {
+            
+        }
+        
+        let opportunityModel = {
+            
+        }
+        
+        $scope.init = function(){
+        }
+        
+        $scope.scoreLeads = function(){
+            if(!confirm('Running this will wipe out existing score and insights. Continue?')) return true;
+            $scope.showLoading(true,'Generating Data');
+            $scope.getLeads()
+            .then(function(res){
+    			$scope.leads = res.data.records;
+                let next = res.data.nextRecordsUrl
+                if(next){
+                    return SFDC.getFromRoot($scope.leads, next)
+                }
+            })
+            .then(function(res){
+    			if(res) $scope.leads = res;
+                return $scope.generateAllLeadScores($scope.leads);
+            })
+            .then(function(res){
+                Mixpanel.sendEvent('SDO Event', {action: 'Score All Leads'})
+            })
+            .finally(function(){
+                if(verbose) console.log('SUCCESS', res)
+                $scope.createToast('Leads Scored', 'success');
+                $scope.showLoading(false, 'Generating Data');
+            })
+            .catch(function(err){
+                console.log('ERROR',err);
+            })
+        }
+        
+        $scope.scoreOpportunities = function(){
+            if(!confirm('Running this will wipe out existing score and insights. Continue?')) return true;
+            $scope.showLoading(true, 'Generating Data');
+            $scope.getOpportunities()
+            .then(function(res){
+                $scope.opportunities = res.data.records;
+                let next = res.data.nextRecordsUrl
+                if(next){
+                    return SFDC.getFromRoot($scope.opportunities, next)
+                }
+            })
+            .then(function(res){
+                if(res) $scope.opportunities = res;
+                return $scope.generateAllOpportunityScores($scope.opportunities);
+            })
+            .finally(function(){
+                if(verbose) console.log('SUCCESS', res)
+                $scope.createToast('Opportunities Scored', 'success');
+                $scope.showLoading(false, 'Generating Data');
+            })
+            .catch(function(err){
+                console.log('ERROR',err);
+            })
+        }
+    
+        $scope.scoreLeadBehavior = function(){
+            if(!confirm('Running this will wipe out existing score behavior and insights for leads. Continue?')) return true;
+            $scope.showLoading(true,'Generating Data');
+            $scope.getLeads()
+            .then(function(res){
+                $scope.leads = res.data.records;
+                let next = res.data.nextRecordsUrl
+                if(next){
+                    return SFDC.getFromRoot($scope.leads, next)
+                }
+            })
+            .then(function(res){
+                if(res) $scope.leads = res;
+                return $scope.generateAllLeadBehaviorScores($scope.leads);
+            })
+            .finally(function(){
+                 if(verbose) console.log('SUCCESS', res)
+                 $scope.createToast('Leads Scored', 'success');
+                 $scope.showLoading(false, 'Generating Data');
+            })
+            .catch(function(err){
+                 console.log('ERROR',err);
+            })
+        }
+    
+        $scope.scoreContactBehavior = function(){
+            if(!confirm('Running this will wipe out existing behavior scores and insights for contacts. Continue?')) return true;
+            $scope.showLoading(true,'Generating Data');
+    
+            $scope.getContacts()
+            .then(function(res){
+                $scope.contacts = res.data.records;
+                let next = res.data.nextRecordsUrl
+                if(next){
+                    return SFDC.getFromRoot($scope.contacts, next)
+                }
+            })
+            .then(function(res){
+                if(res) $scope.contacts = res;
+                return $scope.generateAllContactBehaviorScores($scope.contacts);
+            })
+            .then(function(res){
+                $scope.createToast('Contacts Scored', 'success');
+                $scope.showLoading(false, 'Generating Data');
+            })
+            .catch(function(err){
+                console.log('ERROR',err);
+            })
+        }
+        
+        $scope.scoreAll = function(){
+            if(!confirm('Running this will wipe out existing score and insights. Continue?')) return true
+            $scope.showLoading(true,'Generating Data')
+            $scope.getLeads()
+            .then(function(res){
+                $scope.leads = res.data.records;
+                let next = res.data.nextRecordsUrl
+                if(next){
+                    return SFDC.getFromRoot($scope.leads, next)
+                }
+            })
+            .then(function(res){
+                if(res) $scope.leads = res
+                return $scope.generateAllLeadScores($scope.leads)
+            })
+            .then(function(res){
+                return $scope.generateAllLeadBehaviorScores($scope.leads)
+            })
+            .then(function(res){
+                return $scope.getOpportunities()
+            })
+            .then(function(res){
+                $scope.opportunities = res.data.records
+                let next = res.data.nextRecordsUrl
+                if(next){
+                    return SFDC.getFromRoot($scope.opportunities, next)
+                }
+            })
+            .then(function(res){
+                if(res) $scope.opportunities = res
+                return $scope.generateAllOpportunityScores($scope.opportunities)
+            })
+            .then(function(res){
+                $scope.contacts = res.data.records
+                let next = res.data.nextRecordsUrl
+                if(next){
+                    return SFDC.getFromRoot(current, next)
+                }
+            })
+            .then(function(res){
+                return $scope.getContacts()
+            })
+            .then(function(res){
+                $scope.contacts = res.data.records
+                let next = res.data.nextRecordsUrl
+                if(next){
+                    return SFDC.getFromRoot($scope.contacts, next)
+                }
+            })
+            .then(function(res){
+                if(res) $scope.contacts = res
+                return $scope.generateAllContactBehaviorScores($scope.contacts)
+            })
+            .finally(function(){
+                if(verbose) console.log('SUCCESS', res)
+                $scope.createToast('Leads and opportunities Scored', 'success')
+                $scope.showLoading(false, 'Generating Data')
+            })
+            .catch(function(err){
+                console.log('ERROR',err)
+            })
+        }
+        
+        $scope.getLeads = function(){
+            let query = [
+                'Select Id,Status',
+                'From Lead',
+                'Where IsConverted = false'
+            ]
+            
+            return SFDC.query(query.join(' '))
+        }
+        
+        $scope.getOpportunities = function(){
+            let query = [
+                'Select Id,StageName',
+                'From Opportunity'
+            ]
+            
+            return SFDC.query(query.join(' '))
+        }        
+    
+        $scope.getContacts = function(){
+            let query = [
+                'Select Id',
+                'From Contact'
+            ]
+            
+            return SFDC.query(query.join(' '))
+        }
+        
+        $scope.getModelFactor = function(){
+            let query = [
+                'Select Id',
+                'From ModelFactor'
+            ]
+            
+            return SFDC.query(query.join(' '))
+        }
+        
+        $scope.upsertModelFactor = function(){
+            return new Promise(function(resolve,reject){
+                resolve()
+            })
+        }
+        
+        $scope.getLeadIQ = function(){
+            let query = [
+                'Select Id',
+                'From LeadIQ'
+            ]
+            
+            return SFDC.query(query.join(' '))
+        }
+        
+        //Todo
+        $scope.upsertLeadIQ = function(){
+            return new Promise(function(resolve,reject){
+                resolve()
+            })
+        }
+        
+        $scope.getScoreIntelligence = function(){
+            let query = [
+                'Select Id, BaseId, Insight',
+                'From ScoreIntelligence'
+            ]
+            
+            return SFDC.query(query.join(' '))
+        }
+        
+        $scope.upsertScoreIntelligence = function(records){
+            let promises = []
+            
+            records.map(function(record){
+                promises.push(SFDC.delete(sobject, record))
+            })
+            
+            return Promise.all(promises)
+        }
+        
+        $scope.getLeadScores = function(leads){
+            let query = [
+                'Select Id, BaseId',
+                'From ScoreIntelligence'
+            ]
+            
+            return SFDC.query(query.join(' '))
+        }
+        
+        $scope.setLeadScores = function(){
+            let query = [
+                'Select Id',
+                'From ScoreIntelligence'
+            ]
+            
+            return SFDC.query(query.join(' '))
+        }
+        
+        $scope.upsertLeadScores = function(){
+            return new Promise(function(resolve,reject){
+                resolve()
+            })
+        }
+        
+        $scope.getOpportunityScores = function(){
+            let query = [
+                'Select Id, BaseId',
+                'From OpportunityScore'
+            ]
+            
+            return SFDC.query(query.join(' '))
+        }
+        
+        $scope.generateAllLeadScores = function(leads){
+    
+    		console.log('leads', leads);
+            let scores = [];
+            let promises = [];
+            let iterator = 1;
+            
+            leads.map(function(lead){
+                let min = leadScoreMinMax[lead.Status] ? leadScoreMinMax[lead.Status].min : 0; 
+                let max = leadScoreMinMax[lead.Status] ? leadScoreMinMax[lead.Status].max : 99;
+                
+                let scoreIntelligence = {
+                'attributes': {'type': 'ScoreIntelligence'},
+                'BaseId': lead.Id, 
+                'Score': Math.floor(Math.random() * (max - min)) + min,
+                'LastModifiedTimeOnRecord': new Date().getTime()
+                }
+                
+                scores.push(scoreIntelligence);
+                iterator++;
+                
+                if(iterator % 200 == 0){
+                	promises.push(SFDC.massInsert(scores))
+                scores = [];
+                } else if(iterator == leads.length){
+                    console.log('final iteration ' + iterator);
+                    promises.push(SFDC.massInsert(scores))
+                }
+            })
+            
+            console.log(promises);
+            return Promise.all(promises);
+        }
+        
+        $scope.generateAllOpportunityScores = function(opportunities){
+            let scores = [];
+            let promises = [];
+            let batchLimit = 1;
+            let iterator = 1;
+    
+            opportunities.map(function(opportunity){
+                if(opportunityScoreMinMax.hasOwnProperty(opportunity.StageName)){
+                    let min = opportunityScoreMinMax[opportunity.StageName].min
+                    let max = opportunityScoreMinMax[opportunity.StageName].max
+                    scores.push({'attributes': {'type': 'OpportunityScore'},'BaseId': opportunity.Id, 'Score': Math.floor(Math.random() * (max - min)) + min });
+                    batchLimit++;
+                    iterator++;
+    
+                    if(iterator % 200 == 0){
+                        promises.push(SFDC.massInsert(scores))
+                        scores = [];
+                        batchLimit = 1;
+                    } else if(iterator == opportunities.length){
+                        promises.push(SFDC.massInsert(scores))
+                    }
+                }
+            })
+    
+            console.log(promises);
+            return Promise.all(promises);
+        }
+        
+        $scope.generateAllLeadBehaviorScores = function(leads){
+            let scores = [];
+            let promises = [];
+            let batchLimit = 1;
+            let iterator = 1;
+    
+            leads.map(function(lead){
+                let min = leadScoreMinMax[lead.Status] ? leadScoreMinMax[lead.Status].min : 0; 
+                let max = leadScoreMinMax[lead.Status] ? leadScoreMinMax[lead.Status].max : 99;
+                    
+                let scoreIntelligence = {
+                    'attributes': {'type': 'EngagementScore'},
+                    'BaseId': lead.Id, 
+                    'EngagementScore': Math.floor(Math.random() * (max - min)) + min,
+                    'LastModifiedTimeOnRecord': new Date().getTime()
+                }
+                
+                scores.push(scoreIntelligence);
+                batchLimit++;
+                iterator++;
+                
+                if(iterator % 200 == 0){
+                    promises.push(SFDC.massInsert(scores))
+                    scores = [];
+                batchLimit = 1;
+                } else if(iterator == leads.length){
+                	promises.push(SFDC.massInsert(scores))
+                }
+            })
+            
+            console.log(promises);
+            return Promise.all(promises);
+        }
+    
+        $scope.generateAllContactBehaviorScores = function(contacts){
+            let scores = [];
+            let promises = [];
+            let batchLimit = 1;
+            let iterator = 1;
+    
+            contacts.map(function(contact){
+                let min = 40
+                let max = 99
+                    
+                let enagementScore = {
+                    'attributes': {'type': 'EngagementScore'},
+                    'BaseId': contact.Id, 
+                    'EngagementScore': Math.floor(Math.random() * (max - min)) + min,
+                    'LastModifiedTimeOnRecord': new Date().getTime()
+                }
+                
+                scores.push(enagementScore);
+                batchLimit++;
+                iterator++;
+    
+                if(iterator % 200 == 0){
+                    promises.push(SFDC.massInsert(scores))
+                    scores = [];
+                    batchLimit = 1;
+                } else if(iterator == contacts.length){
+                    promises.push(SFDC.massInsert(scores))
+                }
+            })
+            console.log(promises);
+            return Promise.all(promises);
+        }
+        
+        $scope.upsertRecords = function(sobject, records, aUnupdateable, aUncreateable){
+            let promises = [];
+            let count = 1;
+            
+            records.map(function(record){
+                promises.push(SFDC.upsert(sobject, record, aUnupdateable, aUncreateable))
+                if(verbose) console.log(`Generating Request for ${sobject}, Progress ${count} of ${records.length}`);
+                count++;
+            })
+        }
+        
+        $scope.init()
+    }
+    
+</apex:page>

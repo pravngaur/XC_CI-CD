@@ -1,0 +1,5 @@
+<apex:component id="cc_page_full_width">
+  <script type="text/javascript">
+      $(".container").toggleClass("container container-fluid");
+  </script>
+</apex:component>

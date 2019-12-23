@@ -1,0 +1,103 @@
+<apex:component id="cc_PDP_PDFicon" controller="cc_ctrl_ProductMedia">
+    <script id="CC-ProductDetail-MediaSection-Desktop" type="text/template">
+        {{#eachMapEntry this.pageData}}
+        <div class="nvRow nvGroupRow cc_nv_group_row">
+            <h5 class="groupName cc_group_name">{{this.groupName}}</h5>
+            <table class="nvRow nvGroupRow cc_nv_group_row table table-striped table-condensed">
+                <tbody>
+                {{#each this}}
+                <tr>
+                    <th>
+                        <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                        <a href="{{this.URI}}"> <!-- <a href="{{productImage this}}">-->
+                            <span class="value cc_value">{{this.productDescription}}</span>
+                            <span class="value cc_value">{{pageLabelMap 'View'}}</span>
+                        </a>
+                    </th>
+                </tr>
+                {{/each}}
+                </tbody>
+            </table>
+        </div>
+        {{/eachMapEntry}}
+
+    </script>
+    <script id="CC-ProductDetail-NameValueGroupedSection-Desktop" type="text/template">
+        {{#eachMapEntry this.pageData}}
+        <div class="nvRow nvGroupRow cc_nv_group_row">
+            <h5 class="groupName cc_group_name">{{this.groupName}}</h5>
+            <table class="nvRow nvGroupRow cc_nv_group_row table table-striped table-condensed">
+                <tbody>
+                {{#each this}}
+                {{log this}}
+                <tr class="nvRow cc_nv_row">
+                    <th>
+                        <span class="name cc_name1">{{this.name}}</span>
+                    </th>
+                    <th>
+                        <span class="value cc_value1">{{trim this.value}}</span>
+                    </th>
+                </tr>
+                {{/each}}
+
+                </tbody>
+            </table>
+        </div>
+        {{/eachMapEntry}}
+    </script>
+
+    <script id="CC-ProductDetail-TabContainer-Desktop" type="text/template">
+        <div class="panel panel-default cc_panel cc_prod_detail_panel">
+            <div class="panel-body cc_body">
+                <div class="tabs_container cc_tabs_container cc_product_detail_container">
+                    <ul class="nav nav-tabs cc_nav-tabs" id="myTab">
+                        {{#each this}}
+                        <li role="presentation" class="{{#ifEquals @index 0}}active{{/ifEquals}}cc_li">
+                            <a href="#{{this.sectionID}}_{{this.grouping}}" data-toggle="tab">{{pageLabelMap this.sectionLabel}}</a>
+                        </li>
+                        {{/each}}
+
+                        <li id="TestTab" role="presentation"  class="{{#ifEquals @index 0}}active{{/ifEquals}} cc_li">
+                            <a href="#TestTabContent" data-toggle="tab">{{pageLabelMap 'Head_ContentProduct_Media'}}</a>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content cc_tab-content">
+                        {{#each this}}
+                        <div role="tabpanel" class="tab-pane cc_tab-pane {{#ifEquals @index 0}} active {{/ifEquals}}" id="{{this.sectionID}}_{{this.grouping}}"> <!--{{#ifEquals @index 0}} active {{/ifEquals}} -->
+                            <p class="{{this.sectionID}} cc_loading">Loading content...</p>
+                        </div>
+                        {{/each}}
+
+                        <div role="tabpanel" class="tab-pane cc_tab-pane {{#ifEquals @index 0}} active {{/ifEquals}}" id="TestTabContent"> <!--{{#ifEquals @index 0}} active {{/ifEquals}}-->
+                            {!contentProductMedia}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </script>
+
+    <script type="text/javascript">
+        jQuery(function ($) {
+            CCRZ.uiProperties.mediaSectionView.desktop.tmpl = 'CC-ProductDetail-MediaSection-Desktop';
+            CCRZ.uiProperties.nameValGroupSectionView.desktop.tmpl = 'CC-ProductDetail-NameValueGroupedSection-Desktop';
+            CCRZ.uiProperties.tabSectionView.desktop.tmpl = 'CC-ProductDetail-TabContainer-Desktop';
+
+            CCRZ.pubSub.on('view:productDetailView:refresh', function () {
+                var display = {!displayProductMedia};
+
+                if (display == false) {
+                    $("#TestTabContent").hide();
+                    $("#TestTab").hide();
+                }
+            });
+        });
+
+        //2019-03-25 -- brogers -- Helper to trim leading zeroes from slider spec values
+        Handlebars.registerHelper('trim', function(obj) {
+            return obj.replace(/^0+/, '');
+        });
+
+    </script>
+</apex:component>

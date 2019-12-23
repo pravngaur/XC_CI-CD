@@ -1,0 +1,13 @@
+<design:component label="GilmoreLabs - Selectable Tiles">
+   <design:attribute name="lstInput" label="1: Item List" description="A text collection containing either the values to display on the tiles or a list of IDs of the records you would like to display on the tiles." />
+   <design:attribute name="strObjectName" label="2: Object API Name" description="If your list is a list of Ids, this property denotes object API name being displaying in the tiles" />
+   
+    
+    <design:attribute name="strSubjectTemplate" label="3: Subject Template" description="A text template for the heading text on the tile. This is used when showing objects (Use {fieldName} for merge fields)" />
+    <design:attribute name="strDescriptionTemplate" label="4: Description Template" description="A text template for the details text on the tile. This is used when showing objects (Use {fieldName} for merge fields)" />
+    <design:attribute name="multiSelection" label="5: MultiSelection" description="Allows the user to select multiple tiles" />
+    
+    <design:attribute name="lstSelectedItems" label="6: Selected Items" description="The items selected by the user can be saved to an output text collection"/>
+    <design:attribute name="firstSelectedItem" label="7: First Selected Item" description="The first item selected by the user can be saved to an output text variable (Useful if only allowing a single selection)"/>
+   
+</design:component>
