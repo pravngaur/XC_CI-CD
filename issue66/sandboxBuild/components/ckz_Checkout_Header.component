@@ -1,6 +1,0 @@
-<!--
- - Created by brandon.rogers on 1/22/19.
- -->
-
-<apex:component id="ckz_Checkout_Header">
-</apex:component>

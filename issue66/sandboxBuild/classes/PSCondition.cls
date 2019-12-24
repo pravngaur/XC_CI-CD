@@ -1,1 +1,0 @@
-global virtual interface PSCondition extends PSSoqlable{}

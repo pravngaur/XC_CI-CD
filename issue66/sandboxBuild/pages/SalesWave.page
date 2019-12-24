@@ -1,3 +1,0 @@
-<apex:page sidebar="false">
-    <wave:dashboard developerName="Sales_Wave_Overview1" openLinksInNewWindow="false" height="1500px"></wave:dashboard>
-</apex:page>

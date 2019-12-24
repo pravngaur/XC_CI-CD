@@ -1,3 +1,0 @@
-<apex:page id="ckz_BIB_OC_incl" sidebar="false" showHeader="false" standardStylesheets="false">
-    <c:ckz_OrderConf_OrderSummary_RP />
-</apex:page>

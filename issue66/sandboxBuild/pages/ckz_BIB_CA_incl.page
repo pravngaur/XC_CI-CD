@@ -1,8 +1,0 @@
-<apex:page id="ckz_BIB_CA_incl" sidebar="false" showHeader="false" standardStylesheets="false">
-
-    <c:ckz_UserRolesCartInclude />
-    <c:ckz_CreditLimitCartInclude />
-
-    <c:ckz_RewardsPoints />
-
-</apex:page>

@@ -1,6 +1,0 @@
-<apex:page standardController="Milestone1_Project__c" extensions="GanttChartHelper" sidebar="false">
-
-    <title>Milestone Gantt Chart</title>
-    
-    <c:GanttChart target="{!myId}"/> 
-</apex:page>

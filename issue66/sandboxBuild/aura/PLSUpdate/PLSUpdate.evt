@@ -1,3 +1,0 @@
-<aura:event type="APPLICATION" description="Fired when the Einstein PLS should be updated">
-
-</aura:event>

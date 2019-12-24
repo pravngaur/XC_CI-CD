@@ -19,7 +19,7 @@ function auth(){
 function build(){
     cmd.get(
         `
-        cd issue66
+        cd scCodeBase
         sfdx force:source:convert --rootdir force-app --outputdir sandboxBuild
         `,
         function(err, data, stderr){
@@ -37,7 +37,7 @@ function build(){
 function createArchive(){
     cmd.get(
         `
-            cd issue66
+            cd scCodeBase
             zip -r -X sandboxBuild.zip sandboxBuild
         `,
         function(err, data, stderr){
@@ -52,9 +52,10 @@ function createArchive(){
 }
 
 function deployBuild(){
+    //TODO: Create the dir scCodeBase & git clone the SC code
     cmd.get(
         `
-        cd issue66
+        cd scCodeBase
         sfdx force:mdapi:deploy --zipfile sandboxBuild.zip --targetusername pgaur_sc_fixes@pgaur-20190815.demo.demosb
         `,
         function(err, data, stderr){

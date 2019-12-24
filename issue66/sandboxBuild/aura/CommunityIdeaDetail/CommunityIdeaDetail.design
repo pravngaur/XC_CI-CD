@@ -1,3 +1,0 @@
-<design:component label="Idea Details">
-	<design:attribute name="ideaId" label="Idea ID" description="ID of the Idea record." default="{!recordId}" />
-</design:component>

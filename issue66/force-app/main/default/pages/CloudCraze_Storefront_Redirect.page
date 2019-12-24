@@ -1,3 +1,0 @@
-<apex:page sidebar="false" showHeader="false" standardStylesheets="false">
- <script> document.location = '/DefaultStore/'; </script>
-</apex:page>

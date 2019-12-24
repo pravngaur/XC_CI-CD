@@ -1,3 +1,0 @@
-<aura:interface description="Interface template">
-    <aura:registerEvent name="renderPanel" type="c:Insights_InsightRenderPanel"/>
-</aura:interface>

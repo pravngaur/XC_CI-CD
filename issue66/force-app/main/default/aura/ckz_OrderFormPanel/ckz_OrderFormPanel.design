@@ -1,3 +1,0 @@
-<design:component label="B2B Commerce Order Form">
-    <design:attribute name="recordId" label="Record ID" />
-</design:component>

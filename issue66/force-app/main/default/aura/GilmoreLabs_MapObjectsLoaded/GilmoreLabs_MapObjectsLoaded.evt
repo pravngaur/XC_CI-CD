@@ -1,3 +1,0 @@
-<aura:event type="APPLICATION">
-    <aura:attribute name="objs" Type="Object[]"/>
-</aura:event>

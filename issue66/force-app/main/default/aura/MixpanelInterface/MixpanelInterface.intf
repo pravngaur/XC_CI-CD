@@ -1,4 +1,0 @@
-<aura:interface access="global">
-    <aura:registerEvent name="MixpanelEvent" type="c:MixpanelEvent"></aura:registerEvent>
-    <aura:registerEvent name="MixpanelUpdate" type="c:MixpanelUpdate"></aura:registerEvent>
-</aura:interface>
